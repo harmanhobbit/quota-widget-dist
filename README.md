@@ -25,8 +25,25 @@ carries:
 Windows 11 ships the WebView2 runtime the UI renders with, so there is no
 separate runtime to install.
 
-**Linux** is not distributed here. It is packaged as a Nix flake in the source
-repo and updates with `nix profile upgrade`.
+### Linux
+
+**No Linux download is published here, and the app cannot update itself on
+Linux.** The releases above are Windows-only.
+
+This is not an oversight. A Linux build links GTK3 and WebKitGTK from the host
+system rather than bundling them the way the Windows EXE bundles nothing at
+all, so a single "portable" Linux binary would fail on any distribution whose
+library versions differ from the one it was built on — which is most of them.
+The supported Linux route is instead a Nix flake, which pins those libraries
+exactly.
+
+The flake lives in the source repository, which is private, so it is currently
+available only to people who already have access to it. If you are reading this
+and want to run it on Linux, open an issue — a public flake or an AppImage is
+straightforward to add, it simply has not been needed yet.
+
+The app's own update check is Windows-only for the same reason: on Nix, upgrade
+with `nix profile upgrade`.
 
 ## First run
 
@@ -45,9 +62,15 @@ and shows an unobtrusive "Update available" line in Settings with a **Check
 now** button. Uncheck **Check for updates** in Settings to turn the automatic
 checks off; **Check now** keeps working either way.
 
-Right now the app *tells* you an update exists and links you here — you download
-and run the new installer yourself. In-place installing is coming in a later
-version.
+On Windows an **Install update** button appears alongside it: the app downloads
+the new installer, verifies its signature, and runs it. The app closes and
+reopens partway through, which is expected. This works only if you installed via
+the installer — a portable EXE cannot replace itself, so update it by
+downloading the new one.
+
+Where a release publishes nothing for your platform, the app still tells you a
+newer version exists but offers no install button, since it has nothing it could
+install. Upgrade however you installed it.
 
 Builds made from a development branch carry a branch badge next to the version
 and never check for updates at all, since they are usually ahead of the latest
@@ -63,6 +86,5 @@ the public key baked into the app:
 RWQHEg24HhWu6QFITG26y7995k+xW1CG3IHAplDddbIF1LahMc7G7fsz
 ```
 
-Today the app only reads the manifest to compare version numbers; the signature
-is published so that in-place updating can verify it when that ships, and so
-you can check a download by hand in the meantime.
+The app verifies this signature itself before running a downloaded installer, so
+checking by hand is only for the curious or the cautious.
